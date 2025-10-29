@@ -6,3 +6,7 @@ function getRandomColor() {
   }
   return color;
 }
+
+document.getElementById('backgroundColorButton').addEventListener('click', () => {
+  document.body.style.backgroundColor = getRandomColor();
+});
