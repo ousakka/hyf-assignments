@@ -7,3 +7,11 @@ body {
   margin: 1rem;
   
 }
+
+
+header{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #333;
+}
