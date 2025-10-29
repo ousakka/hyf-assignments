@@ -33,3 +33,13 @@ h1 {
 h2,h3 {
   color: #4e00cc;
 }
+
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+li,p {
+  padding: 8px 0;
+  font-size: 1.1em;
+}
