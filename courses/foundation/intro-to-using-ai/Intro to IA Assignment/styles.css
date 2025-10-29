@@ -24,3 +24,12 @@ header{
   border-radius: 16px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
+
+h1 {
+    color: #555;
+   font-size: 2rem;
+}
+
+h2,h3 {
+  color: #4e00cc;
+}
