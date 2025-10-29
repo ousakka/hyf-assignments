@@ -31,6 +31,7 @@ h1 {
 }
 
 h2,h3 {
+    font-size: 1.5rem;
   color: #4e00cc;
 }
 
@@ -41,7 +42,7 @@ ul {
 
 li,p {
   padding: 8px 0;
-  font-size: 1.1em;
+  font-size: 1rem;
 }
 
 button {
@@ -58,4 +59,24 @@ button {
 
 button:hover {
   background-color: rgb(75, 58, 82);
+}
+
+@media (max-width: 600px) {
+  .container {
+    margin: 1.5rem;
+    padding: 1rem;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+  }
+
+  h2,h3 {
+    font-size: 1rem;
+}
+
+li,p {
+  font-size: 0.7rem;
+}
+
 }
