@@ -10,7 +10,7 @@ let orderType;
 if (takeaway) {
   orderType = "Yes";
 } else {
-  let orderType = "No";
+   orderType = "No";
 }
 
 console.log(
