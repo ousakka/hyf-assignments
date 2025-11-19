@@ -5,6 +5,12 @@ const surName="Duval";
 
 function getFullName(firstName,surName)
 {
+  if (!firstName || firstName.trim() === " ") {
+     return "You did not provide first name"  
+}
+       if (!surName|| surName.trim() === " ") {
+     return "You did not provide surname"  
+}
     return firstName+" "+surName;
 }
 
@@ -18,8 +24,10 @@ const gender = "male";
 const useFormalName = true;
 
 function getFullName(firstName, surName, useFormalName) {
-  if (firstName === " " || surName === " ") {
-    console.log("First name or last name is empty");
+  if (!firstName || firstName.trim() === " ") {
+    return "You did not provide first name";
+  } else if (!surName || surName.trim() === " ") {
+    return "You did not provide surname";
   } else if (useFormalName === true && gender === "male") {
     return "Lord " + firstName + " " + surName;
   } else if (useFormalName === true && gender === "female") {
@@ -29,7 +37,7 @@ function getFullName(firstName, surName, useFormalName) {
   }
 }
 
-console.log(getFullName(firstName, surName, useFormalName, gender)); 
+console.log(getFullName(firstName, surName, useFormalName, gender));
 
 /* Event application */
 const weekdays = [
@@ -50,10 +58,10 @@ function getEventWeekday(daysFromToday) {
   return weekdays[eventIndex];
 }
 
-console.log(getEventWeekday(9)); 
+console.log(getEventWeekday(9));
 
 /* Weather wear */
- const todayTemperature = 0;
+const todayTemperature = 0;
 function whatToWear(todayTemperature) {
   if (todayTemperature <= 0) {
     return "a heavy coat, gloves, and a scarf";
@@ -66,7 +74,7 @@ function whatToWear(todayTemperature) {
   }
 }
 
-console.log(whatToWear(todayTemperature)); 
+console.log(whatToWear(todayTemperature));
 
 /* Student manager */
 const class07Students = [];
