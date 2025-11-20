@@ -19,14 +19,21 @@ const seriesDurations = [
   },
 ];
 
-function seriesDurationPercentage(days,hours,minutes){
-  const myLifeDurationPerMinutes=80*8760*60;
-  const serieDurationPerMinutes=days*24+hours+minutes;
-  return serieDurationPerMinutes/myLifeDurationPerMinutes*100;
+function seriesDurationPercentage(days, hours, minutes) {
+  const myLifeDurationPerMinutes = 80 * 8760 * 60;
+  const serieDurationPerMinutes = days * 24 + hours + minutes;
+  return (serieDurationPerMinutes / myLifeDurationPerMinutes) * 100;
 }
 
-for(i=0;i<seriesDurations.length;i++)
-{
-  const seriePercentage=seriesDurationPercentage(seriesDurations[i].days,seriesDurations[i].hours,seriesDurations[i].minutes);
-  console.log(seriesDurations[i].title+" took "+seriePercentage+" of my life");
+function showAllSeriesPercentage() {
+  for (i = 0; i < seriesDurations.length; i++) {
+    const seriePercentage = seriesDurationPercentage(
+      seriesDurations[i].days,
+      seriesDurations[i].hours,
+      seriesDurations[i].minutes
+    );
+    console.log(
+      seriesDurations[i].title + " took " + seriePercentage + " of my life"
+    );
+  }
 }

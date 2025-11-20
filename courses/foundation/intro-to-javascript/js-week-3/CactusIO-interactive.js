@@ -1,15 +1,9 @@
-let activities = [];
+const activities = [];
 const limitTime = 60;
-const options = {
-  weekday: "long",
-  year: "numeric",
-  month: "long",
-  day: "numeric",
-};
-const today = new Date();
+const today = new Date().toLocaleDateString("en-US");
 
-function addActivity(date, activity, duration) {
-  activities.push({ date, activity, duration });
+function addActivity(today, activity, duration) {
+  activities.push({ today, activity, duration });
 }
 
 addActivity("11/19/2025", "Youtube", 30);

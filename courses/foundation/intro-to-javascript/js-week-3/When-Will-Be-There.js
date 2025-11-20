@@ -10,6 +10,4 @@ function timeToArrive()
    const minutes=Math.floor((time-hours)*60);
     return hours+" hours "+minutes+" minutes";
 }
-
-const travelTime = timeToArrive(travelInformation);
-console.log(travelTime); // 8 hours and 38 minutes
+console.log(timeToArrive(travelInformation)); // 8 hours and 38 minutes
