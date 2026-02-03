@@ -42,6 +42,11 @@ app.get("/user-count", async (req, res) => {
     // row is { total_users: n }
     res.json(row);
   } catch (error) {
+    // If the users table doesn't exist, return zero instead of an error
+    const msg = (error && error.message) || '';
+    if (msg.includes('no such table')) {
+      return res.json({ total_users: 0 });
+    }
     res.status(500).json({ error: error.message });
   }
 });
