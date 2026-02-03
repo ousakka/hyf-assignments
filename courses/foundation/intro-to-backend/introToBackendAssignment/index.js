@@ -1,5 +1,9 @@
 import express from "express";
 import knexLibrary from "knex";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+import * as userModel from "./db/users.js";
 
 const app = express();
 const port = 3000;
@@ -8,45 +12,25 @@ app.use(express.json());
 
 /**
  * Knex connection to SQLite database
- * Make sure users.sqlite3 exists in this folder
  */
 const knexInstance = knexLibrary({
   client: "sqlite3",
   connection: {
-    filename: "C:\Users\oumai\Documents\web developement\HackYourFuture\week-10",
+    filename: "./users.sqlite3",
   },
   useNullAsDefault: true,
 });
 
+// Load home HTML from a separate file to keep route concise
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const HOME_HTML = fs.readFileSync(path.join(__dirname, "templates", "home.html"), "utf8");
+
 /**
- * HOME ROUTE — HTML PAGE
+ * HOME ROUTE — concise
  */
 app.get("/", (req, res) => {
-  res.send(`
-    <!DOCTYPE html>
-    <html>
-      <head>
-        <title>User API</title>
-      </head>
-      <body>
-        <h1>Welcome to the User API</h1>
-        <p>Use the endpoints to retrieve user data.</p>
-        <p>
-          Current user count:
-          <strong><span id="user-count">Loading...</span></strong>
-        </p>
-
-        <script>
-          fetch('/user-count')
-            .then(response => response.json())
-            .then(data => {
-              document.getElementById('user-count').textContent =
-                data[0].total_users;
-            });
-        </script>
-      </body>
-    </html>
-  `);
+  res.type("html").send(HOME_HTML);
 });
 
 /**
@@ -54,23 +38,20 @@ app.get("/", (req, res) => {
  */
 app.get("/user-count", async (req, res) => {
   try {
-    const result = await knexInstance.raw(
-      "SELECT COUNT(*) AS total_users FROM users"
-    );
-    res.json(result);
+    const row = await userModel.countUsers(knexInstance);
+    // row is { total_users: n }
+    res.json(row);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
 /**
- * ALL USERS (sorted by id)
+ * CRUD: list users
  */
-app.get("/all-users", async (req, res) => {
+app.get("/users", async (req, res) => {
   try {
-    const rows = await knexInstance.raw(
-      "SELECT * FROM users ORDER BY id ASC"
-    );
+    const rows = await userModel.getAllUsers(knexInstance);
     res.json(rows);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -78,80 +59,151 @@ app.get("/all-users", async (req, res) => {
 });
 
 /**
- * UNCONFIRMED USERS
+ * CRUD: get user by id
+ */
+app.get("/users/:id", async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+    const user = await userModel.getUserById(knexInstance, id);
+    if (!user) return res.status(404).json({ error: "User not found" });
+    res.json(user);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+/**
+ * CRUD: create user
+ */
+app.post("/users", async (req, res) => {
+  try {
+    const { first_name, last_name, email, confirmed_at, created_at } = req.body;
+    if (!first_name || !email) {
+      return res.status(400).json({ error: "first_name and email are required" });
+    }
+    const newUser = {
+      first_name,
+      last_name: last_name || null,
+      email,
+      confirmed_at: confirmed_at || null,
+      created_at: created_at || new Date().toISOString(),
+    };
+    const inserted = await userModel.createUser(knexInstance, newUser);
+    res.status(201).json(inserted);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+/**
+ * CRUD: update user
+ */
+app.put("/users/:id", async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+    const changes = req.body;
+    const existing = await userModel.getUserById(knexInstance, id);
+    if (!existing) return res.status(404).json({ error: "User not found" });
+    const updated = await userModel.updateUser(knexInstance, id, changes);
+    res.json(updated);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+/**
+ * CRUD: delete user
+ */
+app.delete("/users/:id", async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+    const existing = await userModel.getUserById(knexInstance, id);
+    if (!existing) return res.status(404).json({ error: "User not found" });
+    await userModel.deleteUser(knexInstance, id);
+    res.status(204).send();
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+/**
+ * Other helpful routes delegated to model functions
  */
 app.get("/unconfirmed-users", async (req, res) => {
   try {
-    const rows = await knexInstance.raw(
-      "SELECT * FROM users WHERE confirmed_at IS NULL"
-    );
-    res.json(rows);
+    res.json(await userModel.getUnconfirmedUsers(knexInstance));
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-/**
- * GMAIL USERS
- */
 app.get("/gmail-users", async (req, res) => {
   try {
-    const rows = await knexInstance.raw(
-      "SELECT * FROM users WHERE email LIKE '%@gmail.com'"
-    );
-    res.json(rows);
+    res.json(await userModel.getGmailUsers(knexInstance));
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-/**
- * USERS CREATED IN 2022
- */
 app.get("/2022-users", async (req, res) => {
   try {
-    const rows = await knexInstance.raw(`
-      SELECT * FROM users
-      WHERE created_at >= '2022-01-01'
-        AND created_at < '2023-01-01'
-    `);
+    res.json(await userModel.getUsersByYear(knexInstance, 2022));
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.get("/first-user", async (req, res) => {
+  try {
+    const user = await userModel.getFirstUser(knexInstance);
+    if (!user) return res.status(404).json({ error: "No users found" });
+    res.json(user);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.get("/last-name-count", async (req, res) => {
+  try {
+    res.json(await userModel.lastNameCount(knexInstance));
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+/**
+ * NEW ROUTES
+ */
+// Search users by name or email: /search?q=alex
+app.get('/search', async (req, res) => {
+  try {
+    const q = (req.query.q || '').trim();
+    const rows = await userModel.searchUsers(knexInstance, q);
     res.json(rows);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-/**
- * FIRST USER
- */
-app.get("/first-user", async (req, res) => {
+// Recent users: /recent-users?limit=5
+app.get('/recent-users', async (req, res) => {
   try {
-    const result = await knexInstance.raw(
-      "SELECT * FROM users ORDER BY id ASC LIMIT 1"
-    );
-
-    if (result.length === 0) {
-      return res.status(404).send("No users found");
-    }
-
-    res.json(result);
+    const limit = Number(req.query.limit) || 5;
+    const rows = await userModel.recentUsers(knexInstance, limit);
+    res.json(rows);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-/**
- * LAST NAME COUNT
- */
-app.get("/last-name-count", async (req, res) => {
+// Confirm a user (set confirmed_at): POST /users/:id/confirm
+app.post('/users/:id/confirm', async (req, res) => {
   try {
-    const result = await knexInstance.raw(`
-      SELECT last_name, COUNT(*) AS last_name_count
-      FROM users
-      GROUP BY last_name
-      ORDER BY last_name ASC
-    `);
-    res.json(result);
+    const id = Number(req.params.id);
+    const existing = await userModel.getUserById(knexInstance, id);
+    if (!existing) return res.status(404).json({ error: 'User not found' });
+    const updated = await userModel.confirmUser(knexInstance, id);
+    res.json(updated);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
