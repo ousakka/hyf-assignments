@@ -1,5 +1,7 @@
 Carrot
 Broccoli
-Eggplant
+Tomato
 Corn
 Spinach
+Cucumber
+Pepper
