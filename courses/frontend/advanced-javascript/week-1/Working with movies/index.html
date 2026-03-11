@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Movie Dashboard</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h1>Movie Dashboard</h1>
+
+<div class="buttons">
+<button onclick="showShortTitles()">Short Titles</button>
+<button onclick="showLongTitles()">Long Titles</button>
+<button onclick="count80sMovies()">Movies 1980-1989</button>
+<button onclick="showTaggedMovies()">Movies With Tags</button>
+<button onclick="showRatingsAbove6()">Ratings Above 6</button>
+<button onclick="countKeywords()">Keyword Count</button>
+<button onclick="duplicatedWords()">Duplicated Words</button>
+<button onclick="averageRating()">Average Rating</button>
+<button onclick="countRatings()">Count Good/Average/Bad</button>
+</div>
+
+<div id="movies-container" class="movies-container"></div>
+
+<script src="movies.js"></script>
+<script src="script.js"></script>
+
+</body>
+</html>
