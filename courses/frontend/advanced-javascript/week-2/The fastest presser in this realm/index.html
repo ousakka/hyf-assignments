@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fastest Key Presser</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <h1>Fastest Key Presser!</h1>
+        <label for="gameDuration">Game Duration (seconds):</label>
+        <input type="number" id="gameDuration" placeholder="Enter seconds" min="1">
+        <button id="startGame">Start Game!</button>
+        <div class="score-board">
+            <p>L presses: <span id="lCount">0</span></p>
+            <p>S presses: <span id="sCount">0</span></p>
+        </div>
+        <div id="result" class="result-box"></div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
