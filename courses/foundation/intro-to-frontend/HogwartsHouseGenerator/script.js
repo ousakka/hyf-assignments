@@ -25,7 +25,11 @@ const houses = [
   }
 ];
 
+ advancedJsWeek-2
 const input = document.getElementById("studentName");
+
+const input = document.getElementById("name");
+ main
 const button = document.getElementById("generateBtn");
 const result = document.getElementById("result");
 
